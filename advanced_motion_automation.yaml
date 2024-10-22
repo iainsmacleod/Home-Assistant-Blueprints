@@ -1,0 +1,140 @@
+blueprint:
+  name: Motion-activated Light with Conditions and Optional Settings
+  description: Turn on lights when motion is detected, with optional brightness and color settings, conditional entity state check, and sun position check.
+  domain: automation
+  input:
+    motion_sensors:
+      name: Motion Sensors
+      description: Select one or more motion sensors.
+      selector:
+        entity:
+          domain: binary_sensor
+          device_class: motion
+          multiple: true
+    light_targets:
+      name: Lights
+      description: Select one or more lights to control.
+      selector:
+        target:
+          entity:
+            domain: light
+    no_motion_wait:
+      name: Wait Time
+      description: Time to leave the light on after last motion is detected.
+      default: 120
+      selector:
+        number:
+          min: 0
+          max: 3600
+          unit_of_measurement: seconds
+    use_custom_settings:
+      name: Use Custom Brightness and Color
+      description: Enable to use custom brightness and color settings.
+      default: false
+      selector:
+        boolean:
+    brightness:
+      name: Brightness
+      description: Set the brightness level (0-255).
+      default: 255
+      selector:
+        number:
+          min: 0
+          max: 255
+    color:
+      name: Color
+      description: Set the color (in RGB format).
+      default: [255, 255, 255]
+      selector:
+        color_rgb:
+    condition_entity:
+      name: Condition Entity (Optional)
+      description: Select an entity to check its state (optional). If no entity is defined, this condition is not evaluated.
+      default:
+      selector:
+        entity:
+    condition_states:
+      name: Allowed States for Condition Entity
+      description: Enter the states that the condition entity should be in (comma-separated). If a Condition Entity is not defined these values are ignored.
+      default:
+      selector:
+        text:
+    sun_condition:
+      name: Sun Condition (Optional)
+      description: Select the sun condition to check.
+      default: none
+      selector:
+        select:
+          options:
+            - none
+            - day
+            - night
+
+mode: restart
+max_exceeded: silent
+
+trigger:
+  - platform: state
+    entity_id: !input motion_sensors
+    to: "on"
+
+variables:
+  use_custom_settings: !input use_custom_settings
+  condition_entity: !input condition_entity
+  condition_states: !input condition_states
+  sun_condition: !input sun_condition
+
+condition:
+  - condition: and
+    conditions:
+      - condition: or
+        conditions:
+          - condition: template
+            value_template: "{{ condition_entity == None or condition_entity == '' }}"
+          - condition: template
+            value_template: >
+              {% set states_list = condition_states.split(',') | map('trim') | list %}
+              {{ condition_entity != None and condition_entity != '' and states_list | length > 0 and states(condition_entity) in states_list }}
+      - condition: or
+        conditions:
+          - condition: template
+            value_template: "{{ sun_condition == 'none' }}"
+          - condition: and
+            conditions:
+              - condition: template
+                value_template: "{{ sun_condition == 'day' }}"
+              - condition: sun
+                after: sunrise
+                before: sunset
+          - condition: and
+            conditions:
+              - condition: template
+                value_template: "{{ sun_condition == 'night' }}"
+              - condition: or
+                conditions:
+                  - condition: sun
+                    after: sunset
+                  - condition: sun
+                    before: sunrise
+
+action:
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: "{{ use_custom_settings }}"
+        sequence:
+          - service: light.turn_on
+            target: !input light_targets
+            data:
+              brightness: !input brightness
+              rgb_color: !input color
+    default:
+      - service: light.turn_on
+        target: !input light_targets
+  - wait_for_trigger:
+      platform: state
+      entity_id: !input motion_sensors
+      to: "off"
+  - delay: !input no_motion_wait
+  - service: light.turn_off
+    target: !input light_targets
