@@ -1,6 +1,6 @@
 blueprint:
-  name: Motion-activated Light with Conditions and Optional Settings
-  description: Turn on lights when motion is detected, with optional brightness and color settings, conditional entity state check, and sun position check.
+  name: Motion-activated Entity Control with Conditions and Optional Settings
+  description: Turn on entities when motion is detected, with optional brightness and color settings, conditional entity state check, and sun position check.
   domain: automation
   input:
     motion_sensors:
@@ -11,16 +11,14 @@ blueprint:
           domain: binary_sensor
           device_class: motion
           multiple: true
-    light_targets:
-      name: Lights
-      description: Select one or more lights to control.
+    target_entities:
+      name: Entities
+      description: Select one or more entities to control.
       selector:
         target:
-          entity:
-            domain: light
     no_motion_wait:
       name: Wait Time
-      description: Time to leave the light on after last motion is detected.
+      description: Time to leave the entity on after last motion is detected.
       default: 120
       selector:
         number:
@@ -28,13 +26,13 @@ blueprint:
           max: 3600
           unit_of_measurement: seconds
     use_custom_settings:
-      name: Use Custom Brightness and Color
-      description: Enable to use custom brightness and color settings.
+      name: Use Custom Brightness and Color (For Lights)
+      description: Enable to use custom brightness and color settings for lights.
       default: false
       selector:
         boolean:
     brightness:
-      name: Brightness
+      name: Brightness (For Lights)
       description: Set the brightness level (0-255).
       default: 255
       selector:
@@ -42,7 +40,7 @@ blueprint:
           min: 0
           max: 255
     color:
-      name: Color
+      name: Color (For Lights)
       description: Set the color (in RGB format).
       default: [255, 255, 255]
       selector:
@@ -124,18 +122,36 @@ action:
           - condition: template
             value_template: "{{ use_custom_settings }}"
         sequence:
-          - service: light.turn_on
-            target: !input light_targets
-            data:
-              brightness: !input brightness
-              rgb_color: !input color
+          - service_template: >
+              {% if 'light' in target_entities.entity_id[0] %}
+                light.turn_on 
+              {% else %}
+                homeassistant.turn_on 
+              {% endif %}
+            target: !input target_entities
+            data_template:
+              brightness_template : "{{ brightness if 'light' in target_entities.entity_id[0] else none }}"
+              rgb_color_template : "{{ color if 'light' in target_entities.entity_id[0] else none }}"
     default:
-      - service: light.turn_on
-        target: !input light_targets
-  - wait_for_trigger:
-      platform: state
-      entity_id: !input motion_sensors
-      to: "off"
-  - delay: !input no_motion_wait
-  - service: light.turn_off
-    target: !input light_targets
+      - service_template : >
+          {% if 'light' in target_entities.entity_id[0] %}
+            light.turn_on 
+          {% else %}
+            homeassistant.turn_on 
+          {% endif %}
+        target : !input target_entities
+
+  - wait_for_trigger :
+       platform : state 
+       entity_id : !input motion_sensors 
+       to : "off"
+
+  - delay : !input no_motion_wait
+
+  - service_template : >
+       {% if 'light' in target_entities.entity_id[0] %}
+         light.turn_off 
+       {% else %}
+         homeassistant.turn_off 
+       {% endif %}
+     target : !input target_entities
