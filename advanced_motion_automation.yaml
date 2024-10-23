@@ -55,7 +55,7 @@ blueprint:
         entity:
     condition_states:
       name: Allowed States for Condition Entity
-      description: Enter the states that the condition entity should be in (comma-separated). If a Condition Entity is not defined these values are ignored.
+      description: Enter the states that the condition entity should be in (comma-separated). If a Condition Entity is not defined, these values are ignored.
       default:
       selector:
         text:
@@ -69,6 +69,14 @@ blueprint:
             - none
             - day
             - night
+    sun_offset:
+      name: Sun Offset (Minutes)
+      description: Offset in minutes for sunrise/sunset. Negative for before, positive for after.
+      default: 0
+      selector:
+        number:
+          min: -60
+          max: 60
 
 mode: restart
 max_exceeded: silent
@@ -83,6 +91,7 @@ variables:
   condition_entity: !input condition_entity
   condition_states: !input condition_states
   sun_condition: !input sun_condition
+  sun_offset_minutes: !input sun_offset
 
 condition:
   - condition: and
@@ -99,23 +108,15 @@ condition:
         conditions:
           - condition: template
             value_template: "{{ sun_condition == 'none' }}"
-          - condition: and
-            conditions:
-              - condition: template
-                value_template: "{{ sun_condition == 'day' }}"
-              - condition: sun
-                after: sunrise
-                before: sunset
-          - condition: and
-            conditions:
-              - condition: template
-                value_template: "{{ sun_condition == 'night' }}"
-              - condition: or
-                conditions:
-                  - condition: sun
-                    after: sunset
-                  - condition: sun
-                    before: sunrise
+          - condition: template
+            value_template: >
+              {% if sun_condition == 'day' %}
+                {{ is_state('sun.sun', 'above_horizon') and now() >= as_timestamp(state_attr('sun.sun', 'next_rising')) + (sun_offset_minutes * 60) }}
+              {% elif sun_condition == 'night' %}
+                {{ is_state('sun.sun', 'below_horizon') and now() >= as_timestamp(state_attr('sun.sun', 'next_setting')) + (sun_offset_minutes * 60) }}
+              {% else %}
+                true 
+              {% endif %}
 
 action:
   - choose:
