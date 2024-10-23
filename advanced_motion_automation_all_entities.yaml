@@ -130,28 +130,28 @@ action:
               {% endif %}
             target: !input target_entities
             data_template:
-              brightness_template : "{{ brightness if 'light' in target_entities.entity_id[0] else none }}"
-              rgb_color_template : "{{ color if 'light' in target_entities.entity_id[0] else none }}"
+              brightness: "{{ brightness if 'light' in target_entities.entity_id[0] else none }}"
+              rgb_color: "{{ color if 'light' in target_entities.entity_id[0] else none }}"
     default:
-      - service_template : >
+      - service_template: >
           {% if 'light' in target_entities.entity_id[0] %}
             light.turn_on 
           {% else %}
             homeassistant.turn_on 
           {% endif %}
-        target : !input target_entities
+        target: !input target_entities
 
-  - wait_for_trigger :
-       platform : state 
-       entity_id : !input motion_sensors 
-       to : "off"
+  - wait_for_trigger:
+      platform: state
+      entity_id: !input motion_sensors
+      to: "off"
 
-  - delay : !input no_motion_wait
+  - delay: !input no_motion_wait
 
-  - service_template : >
-       {% if 'light' in target_entities.entity_id[0] %}
-         light.turn_off 
-       {% else %}
-         homeassistant.turn_off 
-       {% endif %}
-     target : !input target_entities
+  - service_template: >
+      {% if 'light' in target_entities.entity_id[0] %}
+        light.turn_off 
+      {% else %}
+        homeassistant.turn_off 
+      {% endif %}
+    target: !input target_entities
