@@ -1,5 +1,5 @@
 blueprint:
-  name: Motion-activated Light with Conditions, Exceptions, and Optional Settings
+  name: Motion-activated Light with Conditions, Exceptions, Optional Settings, and Sun Offset
   description: Turn on lights when motion is detected, with optional brightness and color settings, conditional entity state check, and sun position check with offset.
   domain: automation
   input:
