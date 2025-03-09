@@ -1,5 +1,5 @@
 blueprint:
-  name: Motion-activated Light with Conditions and Optional Settings
+  name: Motion-activated Light with Conditions, Exceptions, and Optional Settings
   description: Turn on lights when motion is detected, with optional brightness and color settings, conditional entity state check, and sun position check.
   domain: automation
   input:
@@ -69,6 +69,18 @@ blueprint:
             - none
             - day
             - night
+    blocking_entity:
+      name: Blocking Entity (Optional)
+      description: Select an entity that will prevent the automation from running when in specified state.
+      default:
+      selector:
+        entity:
+    blocking_state:
+      name: Blocking State
+      description: The automation will not run when the blocking entity is in this state.
+      default:
+      selector:
+        text:
 
 mode: restart
 max_exceeded: silent
@@ -83,10 +95,18 @@ variables:
   condition_entity: !input condition_entity
   condition_states: !input condition_states
   sun_condition: !input sun_condition
+  blocking_entity: !input blocking_entity
+  blocking_state: !input blocking_state
 
 condition:
   - condition: and
     conditions:
+      - condition: or
+        conditions:
+          - condition: template
+            value_template: "{{ blocking_entity == None or blocking_entity == '' }}"
+          - condition: template
+            value_template: "{{ states(blocking_entity) != blocking_state }}"
       - condition: or
         conditions:
           - condition: template
