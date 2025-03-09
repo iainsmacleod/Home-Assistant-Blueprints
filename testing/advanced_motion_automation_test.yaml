@@ -71,13 +71,13 @@ blueprint:
             - night
     blocking_entity:
       name: Blocking Entity (Optional)
-      description: Select an entity that will prevent the automation from running when in specified state.
+      description: Select an entity that will prevent the automation from running when in specified states.
       default:
       selector:
         entity:
-    blocking_state:
-      name: Blocking State
-      description: The automation will not run when the blocking entity is in this state.
+    blocking_states:
+      name: Blocking States
+      description: Enter the states that will prevent the automation from running (comma-separated).
       default:
       selector:
         text:
@@ -106,7 +106,9 @@ condition:
           - condition: template
             value_template: "{{ blocking_entity == None or blocking_entity == '' }}"
           - condition: template
-            value_template: "{{ states(blocking_entity) != blocking_state }}"
+            value_template: >
+              {% set blocking_states_list = blocking_states.split(',') | map('trim') | list %}
+              {{ states(blocking_entity) not in blocking_states_list }}
       - condition: or
         conditions:
           - condition: template
