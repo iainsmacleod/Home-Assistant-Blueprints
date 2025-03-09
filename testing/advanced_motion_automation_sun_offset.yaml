@@ -71,8 +71,8 @@ blueprint:
             - night
     sun_offset:
       name: Sun Offset (Optional)
-      description: Offset for sun events in format HH:MM:SS or -HH:MM:SS (negative for before the event)
-      default: "00:00:00"
+      description: Offset from sunrise/sunset in format 'HH:MM' (e.g., '01:00' or '-01:00')
+      default: "00:00"
       selector:
         text:
     blocking_entity:
@@ -134,9 +134,9 @@ condition:
                 value_template: "{{ sun_condition == 'day' }}"
               - condition: sun
                 after: sunrise
-                after_offset: "{{ sun_offset }}"
+                after_offset: !input sun_offset
                 before: sunset
-                before_offset: "{{ sun_offset }}"
+                before_offset: !input sun_offset
           - condition: and
             conditions:
               - condition: template
@@ -145,10 +145,10 @@ condition:
                 conditions:
                   - condition: sun
                     after: sunset
-                    after_offset: "{{ sun_offset }}"
+                    after_offset: !input sun_offset
                   - condition: sun
                     before: sunrise
-                    before_offset: "{{ sun_offset }}"
+                    before_offset: !input sun_offset
 
 action:
   - choose:
