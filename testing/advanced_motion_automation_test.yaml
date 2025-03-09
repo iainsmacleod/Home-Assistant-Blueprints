@@ -96,7 +96,7 @@ variables:
   condition_states: !input condition_states
   sun_condition: !input sun_condition
   blocking_entity: !input blocking_entity
-  blocking_states: !input blocking_state
+  blocking_states: !input blocking_states
 
 condition:
   - condition: and
