@@ -1,85 +1,82 @@
-# Motion-activated Light with Conditions and Optional Settings
+# Motion-activated Light Blueprint for Home Assistant
 
-## Overview
+This repository contains a Home Assistant automation blueprint that provides advanced motion-activated lighting control with multiple conditions and customization options.
 
-This Home Assistant blueprint automates lighting based on motion detection. It allows for optional customization of brightness and color settings and includes optional conditions based on a entity state and sun position. This makes it ideal for automating lights in your home with flexibility and precision.
+https://github.com/iainsmacleod/Home-Assistant-Blueprints
+
+If you like this blueprint and want to suport me, feel free to leave a donation.
+
+<a href="https://www.buymeacoffee.com/iainmacleod" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-blue.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
 ## Features
 
-- **Motion Detection**: Activates lights when motion is detected.
-- **Customizable Lighting**: Optional settings for brightness and color.
-- **Conditional Activation**: 
-  - Based on the state of a specified entity.
-  - Sun position (day or night).
+- Control lights based on motion detection from one or more sensors
+- Optional custom brightness and color settings
+- Conditional activation based on the state of another entity
+- Sun position awareness with configurable offset (day/night conditions)
+- Blocking functionality to prevent activation in certain scenarios
+- Configurable wait time after motion stops
 
-## Blueprint Configuration
+## Installation
 
-### Inputs
+You can add this blueprint to your Home Assistant instance by:
 
-- **Motion Sensors**
-  - **Name**: Motion Sensors
-  - **Description**: Select one or more motion sensors.
-  - **Type**: Binary Sensor (motion)
+1. Going to **Settings** > **Automations & Scenes** > **Blueprints**
+2. Click the **Import Blueprint** button
+3. Paste the URL of this repository and click **Preview**
+4. Click **Import Blueprint**
 
-- **Lights**
-  - **Name**: Lights
-  - **Description**: Select one or more lights to control.
-  - **Type**: Light Entity
+## Configuration Options
 
-- **Wait Time**
-  - **Name**: Wait Time
-  - **Description**: Time to leave the light on after the last motion is detected.
-  - **Default**: 120 seconds
-  - **Range**: 0 to 3600 seconds
+### Required Settings
 
-- **Use Custom Brightness and Color**
-  - **Name**: Use Custom Brightness and Color
-  - **Description**: Enable to use custom brightness and color settings.
-  - **Default**: False
+- **Motion Sensors**: One or more motion sensors that will trigger the lights
+- **Lights**: One or more lights to be controlled by the automation
+- **Wait Time**: Duration to keep lights on after motion stops (default: 120 seconds)
 
-- **Brightness**
-  - **Name**: Brightness
-  - **Description**: Set the brightness level (0-255) via UI.
-  - **Default**: 255
+### Optional Settings
 
-- **Color**
-  - **Name**: Color
-  - **Description**: Set the color in RGB format via UI.
-  - **Default**: [255, 255, 255]
+- **Use Custom Brightness and Color**: Toggle to enable custom light settings
+- **Brightness**: Light brightness level (0-255)
+- **Color**: RGB color value for the lights
 
-- **Condition Entity (Optional)**
-  - **Name**: Condition Entity
-  - **Description**: Select an entity to check its state (optional).
-  
-- **Allowed States for Condition Entity**
-  - **Name**: Allowed States
-  - **Description**: Enter the states that the condition entity should be in (comma-separated).
+### Conditional Controls
 
-- **Sun Condition (Optional)**
-  - **Name**: Sun Condition
-  - **Description**: Select the sun condition to check (none represents always.
-  - **Options**: none, day, night
+- **Condition Entity**: Optional entity whose state will be checked before activating lights
+- **Allowed States**: Comma-separated list of states for the condition entity
+- **Sun Condition**: Option to activate only during day, night, or regardless of sun position
+- **Sun Offset**: Time offset from sunrise/sunset in HH:MM format
+- **Blocking Entity**: Entity that can prevent the automation from running
+- **Blocking States**: States of the blocking entity that will prevent activation
 
-## Conditions
+## How It Works
 
-1. **Entity State Condition**
-   - This condition checks if a specified entity (such as an input_select representing house modes like morning, evening, or goodnight) is in one of the allowed states.
+1. When motion is detected, the blueprint checks all configured conditions
+2. If conditions are met, lights turn on with either default or custom settings
+3. When motion stops, the blueprint waits for the configured time
+4. After the wait period, lights are turned off
 
-2. **Sun Position Condition**
-   - The automation can be conditioned to only run during certain sun positions—specifically during the day or night, setting none means this condition is ignored and always run.
+## Advanced Functionality
 
-## Usage Instructions
+The blueprint includes several advanced features:
 
-1. Import this blueprint into your Home Assistant instance.
-2. Configure the inputs according to your setup:
-   - Select your motion sensors and lights.
-   - Adjust wait time, brightness, and color settings as needed.
-   - Optionally set a condition entity and allowed states if you want to restrict operation based on another entity's state.
-   - Choose a sun condition if you want to restrict operation based on the time of day.
+- **Mode: restart** - Ensures the automation restarts if triggered again during execution
+- **Multiple Condition Checks** - Evaluates entity states, sun position, and blocking conditions
+- **Template Conditions** - Uses templating for flexible condition evaluation
+- **Sun Position with Offset** - Allows fine-tuning of day/night detection
 
-3. Save and activate the automation. The lights will turn on when motion is detected, subject to any conditions you've set.
+## Example Use Cases
 
-## Notes
+- **Hallway Lighting**: Turn on hallway lights when motion is detected, but only at night
+- **Bathroom Lights**: Activate with custom brightness based on time of day
+- **Kitchen Under-cabinet Lighting**: Turn on when motion is detected but only if the main kitchen light is off
+- **Outdoor Pathway Lights**: Activate only after sunset with a specific color and brightness
 
-- Ensure that your motion sensors are properly configured in Home Assistant before using this blueprint.
-- The sun condition requires that your Home Assistant instance has access to accurate sunrise/sunset times, via the sun entity.
+## Troubleshooting
+
+If your automation isn't working as expected:
+
+- Check that your motion sensors are correctly reporting motion
+- Verify that any conditional entities have the expected states
+- Ensure your sun offset format is correct (HH:MM)
+- Check that blocking entities aren't preventing activation

@@ -1,6 +1,6 @@
 blueprint:
-  name: Motion-activated Light with Conditions and Optional Settings
-  description: Turn on lights when motion is detected, with optional brightness and color settings, conditional entity state check, and sun position check.
+  name: Motion-activated Light with Conditions, Exceptions, Optional Settings, and Sun Offset
+  description: Turn on lights when motion is detected, with optional brightness and color settings, conditional entity state check, and sun position check with offset.
   domain: automation
   input:
     motion_sensors:
@@ -69,6 +69,24 @@ blueprint:
             - none
             - day
             - night
+    sun_offset:
+      name: Sun Offset (Optional)
+      description: Offset from sunrise/sunset in format 'HH:MM' (e.g., '01:00' or '-01:00')
+      default: "00:00"
+      selector:
+        text:
+    blocking_entity:
+      name: Blocking Entity (Optional)
+      description: Select an entity that will prevent the automation from running when in specified states.
+      default:
+      selector:
+        entity:
+    blocking_states:
+      name: Blocking States
+      description: Enter the states that will prevent the automation from running (comma-separated).
+      default:
+      selector:
+        text:
 
 mode: restart
 max_exceeded: silent
@@ -83,10 +101,21 @@ variables:
   condition_entity: !input condition_entity
   condition_states: !input condition_states
   sun_condition: !input sun_condition
+  sun_offset: !input sun_offset
+  blocking_entity: !input blocking_entity
+  blocking_states: !input blocking_states
 
 condition:
   - condition: and
     conditions:
+      - condition: or
+        conditions:
+          - condition: template
+            value_template: "{{ blocking_entity == None or blocking_entity == '' }}"
+          - condition: template
+            value_template: >
+              {% set blocking_states_list = blocking_states.split(',') | map('trim') | list %}
+              {{ states(blocking_entity) not in blocking_states_list }}
       - condition: or
         conditions:
           - condition: template
@@ -105,7 +134,9 @@ condition:
                 value_template: "{{ sun_condition == 'day' }}"
               - condition: sun
                 after: sunrise
+                after_offset: !input sun_offset
                 before: sunset
+                before_offset: !input sun_offset
           - condition: and
             conditions:
               - condition: template
@@ -114,8 +145,10 @@ condition:
                 conditions:
                   - condition: sun
                     after: sunset
+                    after_offset: !input sun_offset
                   - condition: sun
                     before: sunrise
+                    before_offset: !input sun_offset
 
 action:
   - choose:
