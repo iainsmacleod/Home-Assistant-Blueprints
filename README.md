@@ -4,7 +4,7 @@ This repository contains a Home Assistant automation blueprint that provides adv
 
 https://github.com/iainsmacleod/Home-Assistant-Blueprints
 
-If you like this blueprint and want to suport me, feel free to leave a donation.
+If you like this blueprint and want to support me, feel free to leave a donation.
 
 <a href="https://www.buymeacoffee.com/iainmacleod" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-blue.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
