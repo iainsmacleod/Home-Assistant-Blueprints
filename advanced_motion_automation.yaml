@@ -108,6 +108,7 @@ variables:
   sun_offset: !input sun_offset
   blocking_entity: !input blocking_entity
   blocking_states: !input blocking_states
+  entity_target: !input entity_target
 
 condition:
   - condition: and
