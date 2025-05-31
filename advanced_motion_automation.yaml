@@ -11,13 +11,15 @@ blueprint:
           domain: binary_sensor
           device_class: motion
           multiple: true
-    light_targets:
-      name: Lights
-      description: Select one or more lights to control.
+    entity_target:
+      name: Lights and Switches
+      description: Select one or more lights or switches to control.
       selector:
         target:
           entity:
-            domain: light
+            domain:
+              - light
+              - switch
     no_motion_wait:
       name: Wait Time
       description: Time to leave the light on after last motion is detected.
@@ -156,18 +158,51 @@ action:
           - condition: template
             value_template: "{{ use_custom_settings }}"
         sequence:
-          - service: light.turn_on
-            target: !input light_targets
-            data:
-              brightness: !input brightness
-              rgb_color: !input color
+          - choose:
+              - conditions:
+                  - condition: template
+                    value_template: "{{ 'light.' in entity_target.entity_id }}"
+                sequence:
+                  - service: light.turn_on
+                    target: !input entity_target
+                    data:
+                      brightness: !input brightness
+                      rgb_color: !input color
+              - conditions:
+                  - condition: template
+                    value_template: "{{ 'switch.' in entity_target.entity_id }}"
+                sequence:
+                  - service: switch.turn_on
+                    target: !input entity_target
     default:
-      - service: light.turn_on
-        target: !input light_targets
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: "{{ 'light.' in entity_target.entity_id }}"
+            sequence:
+              - service: light.turn_on
+                target: !input entity_target
+          - conditions:
+              - condition: template
+                value_template: "{{ 'switch.' in entity_target.entity_id }}"
+            sequence:
+              - service: switch.turn_on
+                target: !input entity_target
   - wait_for_trigger:
       platform: state
       entity_id: !input motion_sensors
       to: "off"
   - delay: !input no_motion_wait
-  - service: light.turn_off
-    target: !input light_targets
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: "{{ 'light.' in entity_target.entity_id }}"
+        sequence:
+          - service: light.turn_off
+            target: !input entity_target
+      - conditions:
+          - condition: template
+            value_template: "{{ 'switch.' in entity_target.entity_id }}"
+        sequence:
+          - service: switch.turn_off
+            target: !input entity_target
