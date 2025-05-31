@@ -62,7 +62,7 @@ blueprint:
       description: Enter the states that the condition entity should be in (comma-separated). If a Condition Entity is not defined these values are ignored.
       default:
       selector:
-        text: States such as 'on', 'off', 'home', 'not_home', 'bedtime', 'morning', etc (without quotes).
+        text: 
     sun_condition:
       name: Sun Condition (Optional)
       description: Select the sun condition to check.
