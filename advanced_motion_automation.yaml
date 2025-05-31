@@ -58,11 +58,13 @@ blueprint:
       selector:
         entity:
     condition_states:
-      name: Allowed States for Condition Entity
-      description: Enter the states that the condition entity should be in (comma-separated). If a Condition Entity is not defined these values are ignored.
+      name: Condition Value
+      description: For numeric sensors, use <, >, <=, >=, or = followed by a number (e.g., "<50"). For state sensors, enter allowed states (comma-separated).
       default:
       selector:
-        text: 
+        text:
+          pattern: "^[<>=]?[0-9]+(\.[0-9]+)?$|^[a-zA-Z0-9_, ]+$"
+          mode: box
     sun_condition:
       name: Sun Condition (Optional)
       description: Select the sun condition to check.
