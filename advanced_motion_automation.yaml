@@ -177,6 +177,7 @@ action:
                     data:
                       brightness: !input brightness
                       rgb_color: !input color
+                      color_temp: !input color_temperature
               - conditions:
                   - condition: template
                     value_template: "{{ 'switch.' in entity_target.entity_id|string }}"
