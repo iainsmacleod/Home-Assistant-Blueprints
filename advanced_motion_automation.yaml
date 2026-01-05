@@ -46,7 +46,7 @@ blueprint:
           min: 0
           max: 255
     use_RGB:
-      name: Use RGB
+      name: Use RGB & brightness
       description: Enable RGB setting
       default: false
       selector:
@@ -58,7 +58,7 @@ blueprint:
       selector:
         color_rgb:
     use_Temp:
-      name: Use color temperature
+      name: Use color temperature & brightness
       description: Enable temperature setting
       default: false
       selector:
@@ -179,7 +179,7 @@ action:
   - choose:
       - conditions:
           - condition: template
-            value_template: "{{ use_custom_settings }}"
+            value_template: "{{ use_RGB }}"
         sequence:
           - choose:
               - conditions:
@@ -191,13 +191,34 @@ action:
                     data:
                       brightness: !input brightness
                       rgb_color: !input color
-                      color_temp: !input color_temperature
+
               - conditions:
                   - condition: template
                     value_template: "{{ 'switch.' in entity_target.entity_id|string }}"
                 sequence:
                   - service: switch.turn_on
                     target: !input entity_target
+      - conditions:
+          - condition: template
+            value_template: "{{ use_Temp }}"           
+                sequence:
+          - choose:
+              - conditions:
+                  - condition: template
+                    value_template: "{{ 'light.' in entity_target.entity_id|string }}"
+                sequence:
+                  - service: light.turn_on
+                    target: !input entity_target
+                    data:
+                      brightness: !input brightness
+                      color_temp: !input color_temp
+              - conditions:
+                  - condition: template
+                    value_template: "{{ 'switch.' in entity_target.entity_id|string }}"
+                sequence:
+                  - service: switch.turn_on
+                    target: !input entity_target
+                    
     default:
       - choose:
           - conditions:
