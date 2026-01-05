@@ -135,6 +135,7 @@ trigger:
 variables:
   use_RGB: !input use_RGB
   use_Temp: !input use_Temp
+  set_Control: !input set_Control
   disable_Control: !input disable_Control
   condition_entity: !input condition_entity
   condition_states: !input condition_states
@@ -192,7 +193,7 @@ action:
   - choose:
       - conditions:
           - condition: template
-            value_template: "{{ use_RGB }}"
+            value_template: "{{ set_Control = RGB }}"
         sequence:
           - choose:
               - conditions:
@@ -213,7 +214,7 @@ action:
   - choose:
       - conditions:
           - condition: template
-            value_template: "{{ disable_Control }}"
+            value_template: "{{ set_Control = Toggle }}"
         sequence:
           - choose:
               - conditions:
@@ -231,7 +232,7 @@ action:
   - choose:
       - conditions:
           - condition: template
-            value_template: "{{ use_Temp }}"
+            value_template: "{{ set_Control = Temperature }}"
         sequence:
           - choose:
               - conditions:
