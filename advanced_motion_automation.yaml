@@ -1,6 +1,6 @@
 blueprint:
-  name: Motion-activated Light with Conditions, Exceptions, Optional Settings, and Sun Offset
-  description: Turn on lights when motion is detected, with optional brightness and color settings, conditional entity state check, and sun position check with offset.
+  name: Advanced Motion Activated Light with RGB or Color Temperature Control
+  description: Turn on RGB lights when motion is detected, conditional entity state check, and sun position check with offset. You must use either RGB color & brightness, or color temperature & brightness 
   domain: automation
   input:
     motion_sensors:
@@ -31,12 +31,33 @@ blueprint:
           min: 0
           max: 3600
           unit_of_measurement: seconds
-    use_custom_settings:
-      name: Use Custom Brightness and Color
-      description: Enable to use custom brightness and color settings.
+    use_RGB:
+      name: Use RGB & brightness
+      description: Enable to use color temperature and brightness
       default: false
       selector:
         boolean:
+    color:
+      name: Color
+      description: Set RGB color (Cannot be used with color temperature)
+      default: 
+      selector:
+        color_rgb:
+    use_Temp:
+      name: Use color temperature & brightness
+      description: Enable to use color temperature and brightness
+      default: false
+      selector:
+        boolean:
+    color_temperature:
+      name: Color Temperature
+      description: Set color temperature (Cannot be used with RGB)
+      default: 
+      selector:
+        color_temp:
+          unit: kelvin
+          min: 2700
+          max: 6500
     brightness:
       name: Brightness
       description: Set the brightness level (0-255).
@@ -45,12 +66,6 @@ blueprint:
         number:
           min: 0
           max: 255
-    color:
-      name: Color
-      description: Set the color (in RGB format).
-      default: [255, 255, 255]
-      selector:
-        color_rgb:
     condition_entity:
       name: Condition Entity (Optional)
       description: Select an entity to check its state (optional). If no entity is defined, this condition is not evaluated.
@@ -101,7 +116,8 @@ trigger:
     to: "on"
 
 variables:
-  use_custom_settings: !input use_custom_settings
+  use_RGB: !input use_RGB
+  use_Temp: !input use_Temp
   condition_entity: !input condition_entity
   condition_states: !input condition_states
   sun_condition: !input sun_condition
@@ -159,7 +175,7 @@ action:
   - choose:
       - conditions:
           - condition: template
-            value_template: "{{ use_custom_settings }}"
+            value_template: "{{ use_RGB }}"
         sequence:
           - choose:
               - conditions:
@@ -177,6 +193,27 @@ action:
                 sequence:
                   - service: switch.turn_on
                     target: !input entity_target
+      - conditions:
+          - condition: template
+            value_template: "{{ use_Temp }}"
+        sequence:
+          - choose:
+              - conditions:
+                  - condition: template
+                    value_template: "{{ 'light.' in entity_target.entity_id|string }}"
+                sequence:
+                  - service: light.turn_on
+                    target: !input entity_target
+                    data:
+                      brightness: !input brightness
+                      color_temp: !input color_temperature
+              - conditions:
+                  - condition: template
+                    value_template: "{{ 'switch.' in entity_target.entity_id|string }}"
+                sequence:
+                  - service: switch.turn_on
+                    target: !input entity_target
+                    
     default:
       - choose:
           - conditions:
