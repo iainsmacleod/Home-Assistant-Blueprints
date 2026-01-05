@@ -210,7 +210,7 @@ action:
                     target: !input entity_target
                     data:
                       brightness: !input brightness
-                      color_temp: !input color_temp
+                      color_temp: !input color_temperature
               - conditions:
                   - condition: template
                     value_template: "{{ 'switch.' in entity_target.entity_id|string }}"
