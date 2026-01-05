@@ -250,6 +250,20 @@ action:
                 sequence:
                   - service: switch.turn_on
                     target: !input entity_target
+  default:
+          - choose:
+              - conditions:
+                  - condition: template
+                    value_template: "{{ 'light.' in entity_target.entity_id|string }}"
+                sequence:
+                  - service: light.turn_on
+                    target: !input entity_target
+              - conditions:
+                  - condition: template
+                    value_template: "{{ 'switch.' in entity_target.entity_id|string }}"
+                sequence:
+                  - service: switch.turn_on
+                    target: !input entity_target
   - wait_for_trigger:
       platform: state
       entity_id: !input motion_sensors
