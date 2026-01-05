@@ -1,6 +1,6 @@
 blueprint:
   name: Advanced Motion Activated Light with RGB or Color Temperature Control
-  description: Turn on RGB lights when motion is detected, conditional entity state check, and sun position check with offset. Default applies color temperature; if your select Use RGB toggle, color temperature is disabled and RGB is applied.
+  description: Turns light on when motion detected, then off after motion clears & optional wait period. Includes ability to control light via RGB, Toggle or Temperature. Also has conditional entity state check, and sun position check with offset.
   domain: automation
   input:
     motion_sensors:
