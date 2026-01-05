@@ -201,7 +201,7 @@ action:
                     target: !input entity_target
       - conditions:
           - condition: template
-            value_template: "{{ use_Temp }}"           
+            value_template: "{{ use_Temp }}"
         sequence:
           - choose:
               - conditions:
