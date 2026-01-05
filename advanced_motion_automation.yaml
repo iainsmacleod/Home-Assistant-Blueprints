@@ -264,7 +264,7 @@ action:
                 sequence:
                   - service: switch.turn_on
                     target: !input entity_target
-  - wait_for_trigger:
+
       platform: state
       entity_id: !input motion_sensors
       to: "off"
