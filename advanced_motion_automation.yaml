@@ -250,7 +250,7 @@ action:
                 sequence:
                   - service: switch.turn_on
                     target: !input entity_target
-  default:
+    default:
           - choose:
               - conditions:
                   - condition: template
