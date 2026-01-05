@@ -193,7 +193,7 @@ action:
   - choose:
       - conditions:
           - condition: template
-            value_template: "{{ set_Control = RGB }}"
+            value_template: "{{ set_Control == 'RGB' }}"
         sequence:
           - choose:
               - conditions:
@@ -214,7 +214,7 @@ action:
   - choose:
       - conditions:
           - condition: template
-            value_template: "{{ set_Control = Toggle }}"
+            value_template: "{{ set_Control == 'Toggle' }}"
         sequence:
           - choose:
               - conditions:
@@ -232,7 +232,7 @@ action:
   - choose:
       - conditions:
           - condition: template
-            value_template: "{{ set_Control = Temperature }}"
+            value_template: "{{ set_Control == 'Temperature' }}"
         sequence:
           - choose:
               - conditions:
