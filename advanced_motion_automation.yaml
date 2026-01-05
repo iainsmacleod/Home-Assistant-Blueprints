@@ -31,12 +31,6 @@ blueprint:
           min: 0
           max: 3600
           unit_of_measurement: seconds
-    use_custom_settings:
-      name: Use Custom Brightness and Color
-      description: Enable to use custom brightness and color settings.
-      default: false
-      selector:
-        boolean:
     brightness:
       name: Brightness
       description: Set the brightness level (0-255).
@@ -121,7 +115,6 @@ trigger:
     to: "on"
 
 variables:
-  use_custom_settings: !input use_custom_settings
   use_RGB: !input use_RGB
   use_Temp: !input use_Temp
   condition_entity: !input condition_entity
