@@ -229,7 +229,7 @@ action:
                 sequence:
                   - service: switch.turn_on
                     target: !input entity_target
-    - choose:
+  - choose:
       - conditions:
           - condition: template
             value_template: "{{ use_Temp }}"
