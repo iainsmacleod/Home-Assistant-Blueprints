@@ -55,8 +55,8 @@ blueprint:
       default: 
       selector:
         color_temp:
-          min: 2700
-          max: 6000
+          min: 2000
+          max: 9000
           unit: kelvin
     brightness:
       name: Brightness
