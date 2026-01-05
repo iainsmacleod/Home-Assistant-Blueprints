@@ -202,7 +202,7 @@ action:
       - conditions:
           - condition: template
             value_template: "{{ use_Temp }}"           
-                sequence:
+        sequence:
           - choose:
               - conditions:
                   - condition: template
