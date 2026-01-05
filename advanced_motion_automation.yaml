@@ -193,7 +193,6 @@ action:
                     data:
                       brightness: !input brightness
                       rgb_color: !input color
-
               - conditions:
                   - condition: template
                     value_template: "{{ 'switch.' in entity_target.entity_id|string }}"
