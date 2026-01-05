@@ -45,12 +45,24 @@ blueprint:
         number:
           min: 0
           max: 255
+    use_RGB:
+      name: Use RGB
+      description: Enable RGB setting
+      default: false
+      selector:
+        boolean:
     color:
       name: Color
       description: Set RGB color (optional)
       default: 
       selector:
         color_rgb:
+    use_Temp:
+      name: Use color temperature
+      description: Enable temperature setting
+      default: false
+      selector:
+        boolean:
     color_temperature:
       name: Color Temperature
       description: Set color temperature (optional)
@@ -111,6 +123,8 @@ trigger:
 
 variables:
   use_custom_settings: !input use_custom_settings
+  use_RGB: !input use_RGB
+  use_Temp: !input use_Temp
   condition_entity: !input condition_entity
   condition_states: !input condition_states
   sun_condition: !input sun_condition
