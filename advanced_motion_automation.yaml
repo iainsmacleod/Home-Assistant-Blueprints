@@ -39,7 +39,7 @@ blueprint:
         boolean:
     color:
       name: Color
-      description: Set RGB color (optional)
+      description: Set RGB color (Cannot be used with color temperature)
       default: 
       selector:
         color_rgb:
@@ -51,13 +51,13 @@ blueprint:
         boolean:
     color_temperature:
       name: Color Temperature
-      description: Set color temperature (optional)
+      description: Set color temperature (Cannot be used with RGB)
       default: 
       selector:
         color_temp:
           min: 2700
           max: 6000
-          unit_of_measurement: kelvins
+          unit: kelvin
     brightness:
       name: Brightness
       description: Set the brightness level (0-255).
