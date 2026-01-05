@@ -9,7 +9,8 @@ Thanks to iainsmacleod - here is their donation link:
 
 
 # Motion-activated Light with RGB/Temperature Control Blueprint for Home Assistant
-I created this fork for my own use, as I have some lights that refuse to cooperate over RGB and the original blueprint did not allow for control over color temperature. Happy for folks to use it if they find it helpful. I will likely make small changes for my own needs over time. 
+I created this fork for my own use, as I have some lights that refuse to cooperate over RGB and the original blueprint did not allow for control over color temperature. Note I am not a developer but doing this for my own needs - Happy for folks to use it if they find it helpful, but don't expect major updates. I will likely make small changes for my own needs over time.
+
 This repository contains a Home Assistant automation blueprint that provides advanced motion-activated lighting control with multiple conditions and customization options.
 
 
