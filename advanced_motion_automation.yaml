@@ -31,12 +31,43 @@ blueprint:
           min: 0
           max: 3600
           unit_of_measurement: seconds
+    set_Control:
+      name: Select light control mode
+      description: Select between a simple toggle, or RGB, or Color Temperature to operate the light(s)
+      default: true
+      selector:
+        select:
+          options:
+            - Toggle
+            - RGB
+            - Temperature
+          mode: list
+    disable_Control:
+      name: Use simple toggle (Default)
+      description: Disables all light controls, and changes to simple toggle
+      default: true
+      selector:
+        boolean:
     use_RGB:
-      name: Use RGB & brightness
-      description: Disables color temperature & uses RGB instead
+      name: Use RGB
+      description: Uses RGB & brightness 
       default: false
       selector:
         boolean:
+    use_Temp:
+      name: Use color temperature
+      description: Uses color temperature & brightness
+      default: false
+      selector:
+        boolean:
+    brightness:
+      name: Brightness
+      description: Set the brightness level (0-255). Required for default & RGB.
+      default: 255
+      selector:
+        number:
+          min: 0
+          max: 255
     color:
       name: Color
       description: Set RGB color (Disables color temperature)
@@ -52,14 +83,6 @@ blueprint:
           unit: kelvin
           min: 2700
           max: 6500
-    brightness:
-      name: Brightness
-      description: Set the brightness level (0-255). Required.
-      default: 255
-      selector:
-        number:
-          min: 0
-          max: 255
     condition_entity:
       name: Condition Entity (Optional)
       description: Select an entity to check its state (optional). If no entity is defined, this condition is not evaluated.
@@ -111,6 +134,8 @@ trigger:
 
 variables:
   use_RGB: !input use_RGB
+  use_Temp: !input use_Temp
+  disable_Control: !input disable_Control
   condition_entity: !input condition_entity
   condition_states: !input condition_states
   sun_condition: !input sun_condition
@@ -186,7 +211,28 @@ action:
                 sequence:
                   - service: switch.turn_on
                     target: !input entity_target
-    default:
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: "{{ disable_Control }}"
+        sequence:
+          - choose:
+              - conditions:
+                  - condition: template
+                    value_template: "{{ 'light.' in entity_target.entity_id|string }}"
+                sequence:
+                  - service: light.turn_on
+                    target: !input entity_target
+              - conditions:
+                  - condition: template
+                    value_template: "{{ 'switch.' in entity_target.entity_id|string }}"
+                sequence:
+                  - service: switch.turn_on
+                    target: !input entity_target
+    - choose:
+      - conditions:
+          - condition: template
+            value_template: "{{ use_Temp }}"
         sequence:
           - choose:
               - conditions:
@@ -197,7 +243,7 @@ action:
                     target: !input entity_target
                     data:
                       brightness: !input brightness
-                      color_temp: !input color_temperature
+                      rgb_color: !input color_temperature
               - conditions:
                   - condition: template
                     value_template: "{{ 'switch.' in entity_target.entity_id|string }}"
