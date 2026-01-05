@@ -14,13 +14,12 @@ I created this fork for my own use, as I have some lights that refuse to coopera
 This repository contains a Home Assistant automation blueprint that provides advanced motion-activated lighting control with multiple conditions and customization options.
 
 
-
 https://github.com/smithad150/custom-motion-light-controller
 
 ## Features
 
 - Control lights based on motion detection from one or more sensors
-- Light must be operated by RGB or color temperature
+- Light can be operated as Toggle, RGB, or Temperature
 - Conditional activation based on the state of another entity
 - Sun position awareness with configurable offset (day/night conditions)
 - Blocking functionality to prevent activation in certain scenarios
@@ -42,10 +41,13 @@ You can add this blueprint to your Home Assistant instance by:
 - **Motion Sensors**: One or more motion sensors that will trigger the lights
 - **Lights**: One or more lights to be controlled by the automation
 - **Wait Time**: Duration to keep lights on after motion stops (default: 120 seconds)
-- **Use RGB & brightness** : Default is off. If selected, color temperature is not applied and instead RGB value is applied. 
+- **Mode** : Must select Toggle, RGB, or Temperature mode for operation. 
 
 ### Conditional Controls
 
+- **Brightness**: Required for RGB & Temperature modes.
+- **Color**: Sets Color in RGB. Required for RGB mode.
+- **Color Temperature**: Sets Color Temperature in Kelvins. Required for Temperature mode.
 - **Condition Entity**: Optional entity whose state will be checked before activating lights
 - **Allowed States**: Comma-separated list of states for the condition entity
 - **Sun Condition**: Option to activate only during day, night, or regardless of sun position
@@ -78,4 +80,4 @@ If your automation isn't working as expected:
 - Ensure your sun offset format is correct (HH:MM)
 - Check that blocking entities aren't preventing activation
 - Ensure your light can take the RGB or color temperature commands you select.
-- If using the default setting, the light uses color temperature. Be sure your light can accept the value given (unit is Kelvins, range is HA default of 2700-6500)
+- If using the Temperature mode, your light must be able accept the value given (unit is Kelvins, range is HA default of 2700-6500). Some lights may behave unexpectedly if the value is outside their range.
