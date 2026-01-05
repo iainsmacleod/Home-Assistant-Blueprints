@@ -1,6 +1,6 @@
 blueprint:
   name: Advanced Motion Activated Light with RGB or Color Temperature Control
-  description: Turn on RGB lights when motion is detected, conditional entity state check, and sun position check with offset. Default applies color temperature; if your select Use RGB toggle, color temperature is disabled and RGB is applied.
+  description: Turns light on when motion detected, then off after motion clears & optional wait period. Includes ability to control light via RGB, Toggle or Temperature. Also has conditional entity state check, and sun position check with offset.
   domain: automation
   input:
     motion_sensors:
@@ -31,35 +31,40 @@ blueprint:
           min: 0
           max: 3600
           unit_of_measurement: seconds
-    use_RGB:
-      name: Use RGB & brightness
-      description: Disables color temperature & uses RGB instead
-      default: false
+    set_Control:
+      name: Mode
+      description: Select between a simple toggle, or RGB, or Color Temperature to operate the light(s)
+      default: true
       selector:
-        boolean:
+        select:
+          options:
+            - Toggle
+            - RGB
+            - Temperature
+          mode: list
+    brightness:
+      name: Brightness
+      description: Set the brightness level (0-255). Required for RGB & Temperature modes.
+      default: 255
+      selector:
+        number:
+          min: 0
+          max: 255
     color:
       name: Color
-      description: Set RGB color (Disables color temperature)
+      description: Set RGB color (Disabled in Toggle or Temperature Mode)
       default: 
       selector:
         color_rgb:
     color_temperature:
       name: Color Temperature
-      description: Set color temperature (Cannot be used with RGB; RGB toggle will override this)
+      description: Set color temperature (Disabled in Toggle or RGB Mode)
       default: 
       selector:
         color_temp:
           unit: kelvin
           min: 2700
           max: 6500
-    brightness:
-      name: Brightness
-      description: Set the brightness level (0-255). Required.
-      default: 255
-      selector:
-        number:
-          min: 0
-          max: 255
     condition_entity:
       name: Condition Entity (Optional)
       description: Select an entity to check its state (optional). If no entity is defined, this condition is not evaluated.
@@ -110,7 +115,7 @@ trigger:
     to: "on"
 
 variables:
-  use_RGB: !input use_RGB
+  set_Control: !input set_Control
   condition_entity: !input condition_entity
   condition_states: !input condition_states
   sun_condition: !input sun_condition
@@ -163,12 +168,11 @@ condition:
                   - condition: sun
                     before: sunrise
                     before_offset: !input sun_offset
-
 action:
   - choose:
       - conditions:
           - condition: template
-            value_template: "{{ use_RGB }}"
+            value_template: "{{ set_Control == 'RGB' }}"
         sequence:
           - choose:
               - conditions:
@@ -186,7 +190,28 @@ action:
                 sequence:
                   - service: switch.turn_on
                     target: !input entity_target
-    default:
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: "{{ set_Control == 'Toggle' }}"
+        sequence:
+          - choose:
+              - conditions:
+                  - condition: template
+                    value_template: "{{ 'light.' in entity_target.entity_id|string }}"
+                sequence:
+                  - service: light.turn_on
+                    target: !input entity_target
+              - conditions:
+                  - condition: template
+                    value_template: "{{ 'switch.' in entity_target.entity_id|string }}"
+                sequence:
+                  - service: switch.turn_on
+                    target: !input entity_target
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: "{{ set_Control == 'Temperature' }}"
         sequence:
           - choose:
               - conditions:
@@ -197,14 +222,28 @@ action:
                     target: !input entity_target
                     data:
                       brightness: !input brightness
-                      color_temp: !input color_temperature
+                      color_temp_kelvin: !input color_temperature
               - conditions:
                   - condition: template
                     value_template: "{{ 'switch.' in entity_target.entity_id|string }}"
                 sequence:
                   - service: switch.turn_on
                     target: !input entity_target
-  - wait_for_trigger:
+    default:
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: "{{ 'light.' in entity_target.entity_id|string }}"
+            sequence:
+              - service: light.turn_on
+                target: !input entity_target
+          - conditions:
+              - condition: template
+                value_template: "{{ 'switch.' in entity_target.entity_id|string }}"
+            sequence:
+              - service: switch.turn_on
+                target: !input entity_target
+  - wait_for_trigger:                    
       platform: state
       entity_id: !input motion_sensors
       to: "off"
