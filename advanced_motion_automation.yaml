@@ -32,7 +32,7 @@ blueprint:
           max: 3600
           unit_of_measurement: seconds
     set_Control:
-      name: Select light control mode
+      name: Mode
       description: Select between a simple toggle, or RGB, or Color Temperature to operate the light(s)
       default: true
       selector:
@@ -42,27 +42,9 @@ blueprint:
             - RGB
             - Temperature
           mode: list
-    disable_Control:
-      name: Use simple toggle (Default)
-      description: Disables all light controls, and changes to simple toggle
-      default: true
-      selector:
-        boolean:
-    use_RGB:
-      name: Use RGB
-      description: Uses RGB & brightness 
-      default: false
-      selector:
-        boolean:
-    use_Temp:
-      name: Use color temperature
-      description: Uses color temperature & brightness
-      default: false
-      selector:
-        boolean:
     brightness:
       name: Brightness
-      description: Set the brightness level (0-255). Required for default & RGB.
+      description: Set the brightness level (0-255). Required for RGB & Temperature modes.
       default: 255
       selector:
         number:
@@ -70,13 +52,13 @@ blueprint:
           max: 255
     color:
       name: Color
-      description: Set RGB color (Disables color temperature)
+      description: Set RGB color (Disabled in Toggle or Temperature Mode)
       default: 
       selector:
         color_rgb:
     color_temperature:
       name: Color Temperature
-      description: Set color temperature (Cannot be used with RGB; RGB toggle will override this)
+      description: Set color temperature (Disabled in Toggle or RGB Mode)
       default: 
       selector:
         color_temp:
@@ -133,10 +115,7 @@ trigger:
     to: "on"
 
 variables:
-  use_RGB: !input use_RGB
-  use_Temp: !input use_Temp
   set_Control: !input set_Control
-  disable_Control: !input disable_Control
   condition_entity: !input condition_entity
   condition_states: !input condition_states
   sun_condition: !input sun_condition
