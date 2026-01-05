@@ -47,10 +47,16 @@ blueprint:
           max: 255
     color:
       name: Color
-      description: Set the color (in RGB format).
-      default: [255, 255, 255]
+      description: Set RGB color (optional)
+      default: 
       selector:
         color_rgb:
+    color:
+      name: Color Temperature
+      description: Set color temperature (optional)
+      default: 
+      selector:
+        color_temperature:
     condition_entity:
       name: Condition Entity (Optional)
       description: Select an entity to check its state (optional). If no entity is defined, this condition is not evaluated.
