@@ -1,6 +1,6 @@
 # Motion-activated Light with RGB/Temperature Control Blueprint for Home Assistant
 Fork of iainsmacleod/Home-Assistant-Blueprints/advanced_motion_automation.yaml 
-#### This fork retains most of the backend of the original blueprint, but provides means to select either RGB or color temperature to set an RGBW light. 
+#### This fork retains most of the backend of the original blueprint, but provides means to select RGB or color temperature to set an RGBW light. 
 
 Thanks to iainsmacleod - here is their donation link:
 
@@ -42,7 +42,7 @@ You can add this blueprint to your Home Assistant instance by:
 - **Motion Sensors**: One or more motion sensors that will trigger the lights
 - **Lights**: One or more lights to be controlled by the automation
 - **Wait Time**: Duration to keep lights on after motion stops (default: 120 seconds)
-- **Use RGB & brightness** OR **Use color temperature & brightness**: One (not both) must be selected. Brightness required for either option. 
+- **Use RGB & brightness** : Default is off. If selected, color temperature is not applied and instead RGB value is applied. 
 
 ### Conditional Controls
 
@@ -77,5 +77,5 @@ If your automation isn't working as expected:
 - Verify that any conditional entities have the expected states
 - Ensure your sun offset format is correct (HH:MM)
 - Check that blocking entities aren't preventing activation
-- Ensure your light can take RGB or color temperature commands. 
-- If using color temperature, be sure your light can accept the value given (unit is Kelvins, range is HA default of 2700-6500)
+- Ensure your light can take the RGB or color temperature commands you select.
+- If using the default setting, the light uses color temperature. Be sure your light can accept the value given (unit is Kelvins, range is HA default of 2700-6500)
