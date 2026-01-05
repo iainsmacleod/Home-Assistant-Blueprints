@@ -69,8 +69,8 @@ blueprint:
       default: 
       selector:
         color_temp:
-        min: 2700
-        max: 6000
+          min: 2700
+          max: 6000
     condition_entity:
       name: Condition Entity (Optional)
       description: Select an entity to check its state (optional). If no entity is defined, this condition is not evaluated.
