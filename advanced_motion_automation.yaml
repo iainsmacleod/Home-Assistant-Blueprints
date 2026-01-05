@@ -51,7 +51,7 @@ blueprint:
       default: 
       selector:
         color_rgb:
-    color:
+    color_temperature:
       name: Color Temperature
       description: Set color temperature (optional)
       default: 
