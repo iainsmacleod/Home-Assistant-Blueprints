@@ -1,6 +1,6 @@
 blueprint:
-  name: Motion-activated Light with Conditions, Exceptions, Optional Settings, and Sun Offset
-  description: Turn on lights when motion is detected, conditional entity state check, and sun position check with offset. You must use either RGB color & brightness, or color temperature & brightness 
+  name: Advanced Motion Activated Light with RGB or Color Temperature Control
+  description: Turn on RGB lights when motion is detected, conditional entity state check, and sun position check with offset. You must use either RGB color & brightness, or color temperature & brightness 
   domain: automation
   input:
     motion_sensors:
@@ -55,8 +55,8 @@ blueprint:
       default: 
       selector:
         color_temp:
-          min: 2000
-          max: 9000
+          min_color_temp_kelvin: 2000
+          max_color_temp_kelvin: 9000
           unit: kelvin
     brightness:
       name: Brightness
