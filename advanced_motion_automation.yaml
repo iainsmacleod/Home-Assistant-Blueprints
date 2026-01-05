@@ -56,8 +56,8 @@ blueprint:
       selector:
         color_temp:
           unit: kelvin
-          min: 2000
-          max: 9000
+          min: 2700
+          max: 6500
     brightness:
       name: Brightness
       description: Set the brightness level (0-255).
