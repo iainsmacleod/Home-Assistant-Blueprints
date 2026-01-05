@@ -31,17 +31,9 @@ blueprint:
           min: 0
           max: 3600
           unit_of_measurement: seconds
-    brightness:
-      name: Brightness
-      description: Set the brightness level (0-255).
-      default: 255
-      selector:
-        number:
-          min: 0
-          max: 255
     use_RGB:
       name: Use RGB & brightness
-      description: Enable RGB setting
+      description: Enable to use color temperature and brightness
       default: false
       selector:
         boolean:
@@ -53,7 +45,7 @@ blueprint:
         color_rgb:
     use_Temp:
       name: Use color temperature & brightness
-      description: Enable temperature setting
+      description: Enable to use color temperature and brightness
       default: false
       selector:
         boolean:
@@ -65,6 +57,14 @@ blueprint:
         color_temp:
           min: 2700
           max: 6000
+    brightness:
+      name: Brightness
+      description: Set the brightness level (0-255).
+      default: 255
+      selector:
+        number:
+          min: 0
+          max: 255
     condition_entity:
       name: Condition Entity (Optional)
       description: Select an entity to check its state (optional). If no entity is defined, this condition is not evaluated.
