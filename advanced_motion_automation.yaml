@@ -71,6 +71,7 @@ blueprint:
         number: 
           min: 2700
           max: 6000
+          unit_of_measurement: kelvins
     condition_entity:
       name: Condition Entity (Optional)
       description: Select an entity to check its state (optional). If no entity is defined, this condition is not evaluated.
