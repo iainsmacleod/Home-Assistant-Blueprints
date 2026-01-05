@@ -188,7 +188,6 @@ condition:
                   - condition: sun
                     before: sunrise
                     before_offset: !input sun_offset
-
 action:
   - choose:
       - conditions:
