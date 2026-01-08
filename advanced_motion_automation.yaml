@@ -84,9 +84,9 @@ blueprint:
       selector:
         select:
           options:
-            - none
-            - day
-            - night
+            - None
+            - Day
+            - Night
     sun_offset:
       name: Sun Offset (Optional)
       description: Offset from sunrise/sunset in format 'HH:MM' (e.g., '01:00' or '-01:00')
