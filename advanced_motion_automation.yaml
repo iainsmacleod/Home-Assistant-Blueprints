@@ -53,13 +53,13 @@ blueprint:
     color:
       name: Color
       description: Set RGB color (Only used in RGB Mode)
-      default: 
+      default: [255, 255, 255]
       selector:
         color_rgb:
     color_temperature:
       name: Color Temperature
       description: Set color temperature (Only used in Temperature Mode)
-      default: 
+      default: 4000
       selector:
         color_temp:
           unit: kelvin
