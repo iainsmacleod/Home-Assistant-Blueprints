@@ -1,0 +1,275 @@
+blueprint:
+    name: Motion-activated Light with Conditions, Exceptions, Optional Settings, and Sun Offset
+    description: Turns light on when motion detected, then off after motion clears & optional wait period. Includes ability to control light via RGB, Toggle, or Temperature. Also has conditional entity state check, and sun position check with offset.
+    domain: automation
+    input:
+      motion_sensors:
+        name: Motion and Occupancy Sensors
+        description: Select one or more motion or occupancy sensors.
+        selector:
+          entity:
+            domain: binary_sensor
+            device_class:
+              - motion
+              - occupancy
+            multiple: true
+      entity_target:
+        name: Lights and Switches
+        description: Select one or more lights or switches to control.
+        selector:
+          target:
+            entity:
+              domain:
+                - light
+                - switch
+      no_motion_wait:
+        name: Wait Time
+        description: Time to leave the light on after last motion is detected.
+        default: 120
+        selector:
+          number:
+            min: 0
+            max: 3600
+            unit_of_measurement: seconds
+      set_Control:
+        name: Mode
+        description: Select between a simple toggle, RGB, or Color Temperature to operate the light(s)
+        default: Toggle
+        selector:
+          select:
+            options:
+              - Toggle
+              - RGB
+              - Temperature
+            mode: list
+      brightness:
+        name: Brightness
+        description: Set the brightness level (0-255). Required for RGB & Temperature modes.
+        default: 255
+        selector:
+          number:
+            min: 0
+            max: 255
+      color:
+        name: Color
+        description: Set RGB color (Disabled in Toggle or Temperature Mode)
+        default: 
+        selector:
+          color_rgb:
+        context:
+          visibility:
+            condition: template
+            value_template: "{{ set_Control == 'RGB' }}"
+      color_temperature:
+        name: Color Temperature
+        description: Set color temperature (Disabled in Toggle or RGB Mode)
+        default: 
+        selector:
+          color_temp:
+            unit: kelvin
+            min: 2700
+            max: 6500
+        context:
+          visibility:
+            condition: template
+            value_template: "{{ set_Control == 'Temperature' }}"
+      condition_entity:
+        name: Condition Entity (Optional)
+        description: Select an entity to check its state (optional). If no entity is defined, this condition is not evaluated.
+        default:
+        selector:
+          entity:
+      condition_states:
+        name: Allowed States for Condition Entity
+        description: Enter the states that the condition entity should be in (comma-separated). If a Condition Entity is not defined these values are ignored.
+        default:
+        selector:
+          text:
+      sun_condition:
+        name: Sun Condition (Optional)
+        description: Select the sun condition to check.
+        default: none
+        selector:
+          select:
+            options:
+              - none
+              - day
+              - night
+      sun_offset:
+        name: Sun Offset (Optional)
+        description: Offset from sunrise/sunset in format 'HH:MM' (e.g., '01:00' or '-01:00')
+        default: "00:00"
+        selector:
+          text:
+      blocking_entity:
+        name: Blocking Entity (Optional)
+        description: Select an entity that will prevent the automation from running when in specified states.
+        default:
+        selector:
+          entity:
+      blocking_states:
+        name: Blocking States
+        description: Enter the states that will prevent the automation from running (comma-separated).
+        default:
+        selector:
+          text:
+  
+  mode: restart
+  max_exceeded: silent
+  
+  trigger:
+    - platform: state
+      entity_id: !input motion_sensors
+      to: "on"
+  
+  variables:
+    set_Control: !input set_Control
+    condition_entity: !input condition_entity
+    condition_states: !input condition_states
+    sun_condition: !input sun_condition
+    sun_offset: !input sun_offset
+    blocking_entity: !input blocking_entity
+    blocking_states: !input blocking_states
+    entity_target: !input entity_target
+  
+  condition:
+    - condition: and
+      conditions:
+        - condition: or
+          conditions:
+            - condition: template
+              value_template: "{{ blocking_entity == None or blocking_entity == '' }}"
+            - condition: template
+              value_template: >
+                {% set blocking_states_list = blocking_states.split(',') | map('trim') | list %}
+                {{ states(blocking_entity) not in blocking_states_list }}
+        - condition: or
+          conditions:
+            - condition: template
+              value_template: "{{ condition_entity == None or condition_entity == '' }}"
+            - condition: template
+              value_template: >
+                {% set states_list = condition_states.split(',') | map('trim') | list %}
+                {{ condition_entity != None and condition_entity != '' and states_list | length > 0 and states(condition_entity) in states_list }}
+        - condition: or
+          conditions:
+            - condition: template
+              value_template: "{{ sun_condition == 'none' }}"
+            - condition: and
+              conditions:
+                - condition: template
+                  value_template: "{{ sun_condition == 'day' }}"
+                - condition: sun
+                  after: sunrise
+                  after_offset: !input sun_offset
+                  before: sunset
+                  before_offset: !input sun_offset
+            - condition: and
+              conditions:
+                - condition: template
+                  value_template: "{{ sun_condition == 'night' }}"
+                - condition: or
+                  conditions:
+                    - condition: sun
+                      after: sunset
+                      after_offset: !input sun_offset
+                    - condition: sun
+                      before: sunrise
+                      before_offset: !input sun_offset
+  action:
+    - choose:
+        - conditions:
+            - condition: template
+              value_template: "{{ set_Control == 'RGB' }}"
+          sequence:
+            - choose:
+                - conditions:
+                    - condition: template
+                      value_template: "{{ 'light.' in entity_target.entity_id|string }}"
+                  sequence:
+                    - service: light.turn_on
+                      target: !input entity_target
+                      data:
+                        brightness: !input brightness
+                        rgb_color: !input color
+                - conditions:
+                    - condition: template
+                      value_template: "{{ 'switch.' in entity_target.entity_id|string }}"
+                  sequence:
+                    - service: switch.turn_on
+                      target: !input entity_target
+    - choose:
+        - conditions:
+            - condition: template
+              value_template: "{{ set_Control == 'Toggle' }}"
+          sequence:
+            - choose:
+                - conditions:
+                    - condition: template
+                      value_template: "{{ 'light.' in entity_target.entity_id|string }}"
+                  sequence:
+                    - service: light.turn_on
+                      target: !input entity_target
+                      data:
+                        brightness: !input brightness
+                - conditions:
+                    - condition: template
+                      value_template: "{{ 'switch.' in entity_target.entity_id|string }}"
+                  sequence:
+                    - service: switch.turn_on
+                      target: !input entity_target
+    - choose:
+        - conditions:
+            - condition: template
+              value_template: "{{ set_Control == 'Temperature' }}"
+          sequence:
+            - choose:
+                - conditions:
+                    - condition: template
+                      value_template: "{{ 'light.' in entity_target.entity_id|string }}"
+                  sequence:
+                    - service: light.turn_on
+                      target: !input entity_target
+                      data:
+                        brightness: !input brightness
+                        color_temp_kelvin: !input color_temperature
+                - conditions:
+                    - condition: template
+                      value_template: "{{ 'switch.' in entity_target.entity_id|string }}"
+                  sequence:
+                    - service: switch.turn_on
+                      target: !input entity_target
+      default:
+        - choose:
+            - conditions:
+                - condition: template
+                  value_template: "{{ 'light.' in entity_target.entity_id|string }}"
+              sequence:
+                - service: light.turn_on
+                  target: !input entity_target
+                  data:
+                    brightness: !input brightness
+            - conditions:
+                - condition: template
+                  value_template: "{{ 'switch.' in entity_target.entity_id|string }}"
+              sequence:
+                - service: switch.turn_on
+                  target: !input entity_target
+    - wait_for_trigger:                    
+        platform: state
+        entity_id: !input motion_sensors
+        to: "off"
+    - delay: !input no_motion_wait
+    - choose:
+        - conditions:
+            - condition: template
+              value_template: "{{ 'light.' in entity_target.entity_id|string }}"
+          sequence:
+            - service: light.turn_off
+              target: !input entity_target
+        - conditions:
+            - condition: template
+              value_template: "{{ 'switch.' in entity_target.entity_id|string }}"
+          sequence:
+            - service: switch.turn_off
+              target: !input entity_target
