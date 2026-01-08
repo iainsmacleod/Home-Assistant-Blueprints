@@ -52,27 +52,19 @@ blueprint:
           max: 255
     color:
       name: Color
-      description: Set RGB color (Disabled in Toggle or Temperature Mode)
+      description: Set RGB color (Only used in RGB Mode)
       default: 
       selector:
         color_rgb:
-      context:
-        visibility:
-          condition: template
-          value_template: "{{ set_Control == 'RGB' }}"
     color_temperature:
       name: Color Temperature
-      description: Set color temperature (Disabled in Toggle or RGB Mode)
+      description: Set color temperature (Only used in Temperature Mode)
       default: 
       selector:
         color_temp:
           unit: kelvin
           min: 2700
           max: 6500
-      context:
-        visibility:
-          condition: template
-          value_template: "{{ set_Control == 'Temperature' }}"
     condition_entity:
       name: Condition Entity (Optional)
       description: Select an entity to check its state (optional). If no entity is defined, this condition is not evaluated.
