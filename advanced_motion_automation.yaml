@@ -34,7 +34,7 @@ blueprint:
     set_Control:
       name: Mode
       description: Select between a simple toggle, RGB, or Color Temperature to operate the light(s)
-      default: true
+      default: Toggle
       selector:
         select:
           options:
@@ -56,6 +56,10 @@ blueprint:
       default: 
       selector:
         color_rgb:
+      context:
+        visibility:
+          condition: template
+          value_template: "{{ set_Control == 'RGB' }}"
     color_temperature:
       name: Color Temperature
       description: Set color temperature (Disabled in Toggle or RGB Mode)
@@ -65,6 +69,10 @@ blueprint:
           unit: kelvin
           min: 2700
           max: 6500
+      context:
+        visibility:
+          condition: template
+          value_template: "{{ set_Control == 'Temperature' }}"
     condition_entity:
       name: Condition Entity (Optional)
       description: Select an entity to check its state (optional). If no entity is defined, this condition is not evaluated.
