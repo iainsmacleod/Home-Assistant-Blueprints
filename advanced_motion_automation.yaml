@@ -55,7 +55,7 @@ blueprint:
       description: Set RGB color (Only used in RGB Mode)
       default: [255, 255, 255]
       selector:
-        color_rgb:
+        color_picker:
     color_temperature:
       name: Color Temperature
       description: Set color temperature (Only used in Temperature Mode)
