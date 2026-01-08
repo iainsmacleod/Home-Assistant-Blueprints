@@ -1,6 +1,6 @@
 blueprint:
   name: Motion-activated Light with Conditions, Exceptions, Optional Settings, and Sun Offset
-  description: Turns light on when motion detected, then off after motion clears & optional wait period. Includes ability to control light via RGB, Toggle, or Temperature. Also has conditional entity state check, and sun position check with offset.
+  description: Turns light on when motion detected, then off after motion clears & optional wait period. Includes ability to control light via Turn On, RGB, or Temperature. Also has conditional entity state check, and sun position check with offset.
   domain: automation
   input:
     motion_sensors:
@@ -33,12 +33,12 @@ blueprint:
           unit_of_measurement: seconds
     set_Control:
       name: Mode
-      description: Select between a simple toggle, RGB, or Color Temperature to operate the light(s)
-      default: Toggle
+      description: Select between a simple Turn On, RGB, or Color Temperature to operate the light(s)
+      default: Turn On
       selector:
         select:
           options:
-            - Toggle
+            - Turn On
             - RGB
             - Temperature
           mode: list
@@ -193,7 +193,7 @@ action:
   - choose:
       - conditions:
           - condition: template
-            value_template: "{{ set_Control == 'Toggle' }}"
+            value_template: "{{ set_Control == 'Turn On' }}"
         sequence:
           - choose:
               - conditions:
