@@ -1,5 +1,5 @@
 blueprint:
-    name: Motion-activated Light with Conditions, Exceptions, Optional Settings, and Sun Offset
+    name: Test - Motion-activated Light with Conditions, Exceptions, Optional Settings, and Sun Offset
     description: Turns light on when motion detected, then off after motion clears & optional wait period. Includes ability to control light via RGB, Toggle, or Temperature. Also has conditional entity state check, and sun position check with offset.
     domain: automation
     input:
