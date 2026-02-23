@@ -53,7 +53,7 @@ You can add this blueprint to your Home Assistant instance by:
 - **Condition Entity**: Optional entity whose state will be checked before activating lights
 - **Allowed States**: Comma-separated list of states for the condition entity
 - **Sun Condition**: Option to activate only during day, night, or regardless of sun position
-- **Sun Offset**: Time offset from sunrise/sunset in HH:MM format
+- **Sun Offset**: Time offset from sunrise/sunset. Use **HH:MM** (hours:minutes), e.g. 30 minutes = `00:30`, 1 hour = `01:00`. Use a leading minus for “before” (e.g. `-01:00`). **Note:** `30:00` is interpreted as 30 *hours*, not 30 minutes.
 - **Blocking Entity**: Entity that can prevent the automation from running
 - **Blocking States**: States of the blocking entity that will prevent activation
 
@@ -98,7 +98,7 @@ If your automation isn't working as expected:
 
 - Check that your motion sensors are correctly reporting motion
 - Verify that any conditional entities have the expected states
-- Ensure your sun offset format is correct (HH:MM)
+- **Sun offset**: Use HH:MM (e.g. `00:30` for 30 min, `01:00` for 1 hr). Avoid `30:00` — that means 30 hours. If “after sunset + offset” behaves oddly (e.g. condition fails in the evening), this is a [known quirk](https://github.com/home-assistant/core/issues/134471) in some versions: the condition can reference the next day’s sunset; using a smaller offset or trying a different HA version may help.
 - Check that blocking entities aren't preventing activation
 - Verify that the selected mode (Turn On, RGB, or Temperature) matches your light's capabilities
 - For RGB mode, ensure your lights support color changes
