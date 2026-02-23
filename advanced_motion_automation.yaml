@@ -149,11 +149,11 @@ condition:
       - condition: or
         conditions:
           - condition: template
-            value_template: "{{ sun_condition == 'none' }}"
+            value_template: "{{ (sun_condition | default('none')) == 'none' }}"
           - condition: and
             conditions:
               - condition: template
-                value_template: "{{ sun_condition == 'day' }}"
+                value_template: "{{ (sun_condition | default('none')) == 'day' }}"
               - condition: sun
                 after: sunrise
                 after_offset: !input sun_offset
@@ -162,7 +162,7 @@ condition:
           - condition: and
             conditions:
               - condition: template
-                value_template: "{{ sun_condition == 'night' }}"
+                value_template: "{{ (sun_condition | default('none')) == 'night' }}"
               - condition: or
                 conditions:
                   - condition: sun
