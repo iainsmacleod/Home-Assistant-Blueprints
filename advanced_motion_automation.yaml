@@ -84,9 +84,12 @@ blueprint:
       selector:
         select:
           options:
-            - None
-            - Day
-            - Night
+            - value: none
+              label: None
+            - value: day
+              label: Day
+            - value: night
+              label: Night
     sun_offset:
       name: Sun Offset (Optional)
       description: "Offset from sunrise/sunset. Use HH:MM (hours:minutes), e.g. 30 min = 00:30, 1 hour = 01:00. Negative for before (e.g. -01:00). Note: 30:00 means 30 hours, not 30 minutes."
