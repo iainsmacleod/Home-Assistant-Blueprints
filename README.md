@@ -36,7 +36,7 @@ You can add this blueprint to your Home Assistant instance by:
 
 - **Motion Sensors**: One or more motion sensors that will trigger the lights
 - **Lights**: One or more lights to be controlled by the automation
-- **Wait Time**: Duration to keep lights on after motion stops (default: 120 seconds)
+- **Wait Time**: Duration to keep lights on after motion stops (default: 120 seconds). Set to **0** to disable automatic turn-off — the automation will only turn lights on; you turn them off manually or with another automation.
 
 ### Optional Settings
 
@@ -64,8 +64,7 @@ You can add this blueprint to your Home Assistant instance by:
    - **Turn On mode**: Lights turn on with optional brightness setting
    - **RGB mode**: Lights turn on with selected color and brightness
    - **Temperature mode**: Lights turn on with selected color temperature and brightness
-3. When motion stops, the blueprint waits for the configured time period
-4. After the wait period, lights are automatically turned off
+3. When motion stops, if **Wait Time** is greater than 0, the blueprint waits for the configured time period, then turns the lights off. If **Wait Time** is 0, the turn-off sequence is skipped and lights stay on until turned off by another automation or manually.
 
 ## Advanced Functionality
 
@@ -96,6 +95,7 @@ Special thanks to [@smithad150](https://github.com/smithad150/) for improvements
 
 If your automation isn't working as expected:
 
+- **Wait Time 0**: A wait time of 0 means the automation never turns the lights off (on-only mode). If you want “turn off as soon as motion clears”, set wait time to 1 second or your sensor’s clear delay instead.
 - Check that your motion sensors are correctly reporting motion
 - Verify that any conditional entities have the expected states
 - **Sun offset**: Use HH:MM (e.g. `00:30` for 30 min, `01:00` for 1 hr). Avoid `30:00` — that means 30 hours. If “after sunset + offset” behaves oddly (e.g. condition fails in the evening), this is a [known quirk](https://github.com/home-assistant/core/issues/134471) in some versions: the condition can reference the next day’s sunset; using a smaller offset or trying a different HA version may help.
