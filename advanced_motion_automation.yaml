@@ -1,6 +1,6 @@
 blueprint:
   name: Motion-activated Light with Conditions, Exceptions, Optional Settings, and Sun Offset
-  description: Turns light on when motion detected, then off after motion clears & optional wait period. Includes ability to control light via Turn On, RGB, or Temperature. Also has conditional entity state check, and sun position check with offset.
+  description: Turns light on when motion detected, then off after motion clears and an optional wait period. Set wait time to 0 to disable automatic turn-off (on-only). Includes Turn On, RGB, or Temperature control, conditional entity check, and sun position check with offset.
   domain: automation
   input:
     motion_sensors:
@@ -24,7 +24,7 @@ blueprint:
               - switch
     no_motion_wait:
       name: Wait Time
-      description: Time to leave the light on after last motion is detected.
+      description: Seconds to keep the light on after last motion. Set to 0 to disable automatic turn-off (automation only turns lights on).
       default: 120
       selector:
         number:
