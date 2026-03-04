@@ -119,6 +119,7 @@ trigger:
 
 variables:
   set_Control: !input set_Control
+  no_motion_wait: !input no_motion_wait
   condition_entity: !input condition_entity
   condition_states: !input condition_states
   sun_condition: !input sun_condition
